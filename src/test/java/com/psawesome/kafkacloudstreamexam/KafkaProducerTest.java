@@ -12,7 +12,28 @@ import java.util.Properties;
  * DATE: 2020-04-12 일요일 15:55
  */
 public class KafkaProducerTest {
+    /*
+        Ack = 0 빠른 전송, 메시지 손실 가능성 있음 (0.29ms)
+        Ack = 1 빠른 전송, 메시지 손실 가능성 있음 (1.05ms)
+        Ack = All 느린 전송, 메시지 손실 없음 (2.05ms)
 
+        buffer.memory 안에 배치 형태로 모아둔다.
+        linger.ms 인 지연시간만큼 보관 후 보낸다.
+
+        Throughput
+            batch.size -> increase
+            linger.ms -> increase
+            compression.type -> snappy.lz4
+            acks -> 1
+        Latency
+            linger.ms -> 0
+            compression.type -> none
+            acks -> 0
+        Durability
+            batch.size -> increase
+            linger.ms -> increase
+            acks -> all
+     */
     @Test
     void testSendMessage() {
         Properties config = new Properties();
