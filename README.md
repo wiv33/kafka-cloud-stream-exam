@@ -16,12 +16,18 @@
 > vim zoo.cfg
 >
 > > tickTime=2000
+>
 > > dataDir=/var/lib/zookeeper
+>
 > > clientPort=2181
+>
 > > initLimit=20
+>
 > > syncLimit=5
+>
 > > server.1=test-broker01:2888:3888
+>
 > > server.2=test-broker02:2888:3888
+>
 > > server.3=test-broker03:2888:3888
-
 
