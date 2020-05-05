@@ -11,6 +11,7 @@
 4. settings zookeepers
 > apt-get install java
 > > vim ~/.bash_profiles
+>
 > > JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto.x86_64/bin
 
 > cd ~/apache-zookeeper-3.6.1-bin/conf
