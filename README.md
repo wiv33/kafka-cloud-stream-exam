@@ -31,3 +31,10 @@
 >
 > > server.3=test-broker03:2888:3888
 
+> sudo mkdir /var/lib/zookeeper
+> sudo chown -R ec2-user:ec2-user /var/lib/zookeeper
+> sudo vim /etc/hosts
+> > 0.0.0.0 test-broker01
+> > x.x.x.x test-broker02
+> > x.x.x.x test-broker03
+
