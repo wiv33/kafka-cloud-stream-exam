@@ -2,7 +2,7 @@
 
 ## Wating until 6/14
 
-### eccluster
+### ec2 - kafka cluster
 
 1. EC2 login
 2. create EC2 - three instance
@@ -43,3 +43,5 @@
 > > x.x.x.x test-broker02
 > > x.x.x.x test-broker03
 
+### kafka download
+$ wget https://archive.apache.org/dist/kafka/2.1.0/kafka_2.11-2.1.0.tgz
