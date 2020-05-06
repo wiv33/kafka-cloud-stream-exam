@@ -44,4 +44,15 @@
 > > x.x.x.x test-broker03
 
 ### kafka download
+
 $ wget https://archive.apache.org/dist/kafka/2.1.0/kafka_2.11-2.1.0.tgz
+
+  netstat -tnlp
+  
+
+### kafka console
+
+> ./kafka-console-produser.sh --broker-list test-broker01:9092,test-broker02:9092,test-broker03:9092 --topic test_logs
+>
+> ./kafka-console-consumer.sh --bootstrap-server test-broker01:9092,test-broker02:9092,test-broker03:9092 --topic test_logs --from-beginning
+
