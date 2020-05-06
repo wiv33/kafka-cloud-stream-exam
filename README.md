@@ -40,7 +40,9 @@
 > sudo vim /etc/hosts
 >
 > > 0.0.0.0 test-broker01
+
 > > x.x.x.x test-broker02
+
 > > x.x.x.x test-broker03
 
 ### kafka download
