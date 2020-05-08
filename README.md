@@ -49,6 +49,8 @@
 
 $ wget https://archive.apache.org/dist/kafka/2.1.0/kafka_2.11-2.1.0.tgz
 
+  wget http://archive.apache.org/dist/kafka/2.3.1/kafka_2.11-2.3.1.tgz
+
   netstat -tnlp
   
 
