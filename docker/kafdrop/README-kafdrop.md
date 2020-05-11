@@ -31,8 +31,10 @@
     ./kafka-console-consumer.sh --bootstrap-server my_kafka:9092 --topic my_logs --group my_logs --from-beginning
     
 
+## +New - Add topic my_logs
+
 ![result](./img/result.jpg)
 
-### Add topic my_logs
+### Show message
 
 ![add topic](./img/show_message.jpg)
