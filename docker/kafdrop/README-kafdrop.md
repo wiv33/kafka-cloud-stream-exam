@@ -10,7 +10,7 @@
 
     docker exec -it kafka-cloud-stream-exam_my_kafka_1 sh -c "cd /opt/kafka/bin && /bin/bash"
     
-img -f after_first_command
+![first_command](./img/after_first_command.jpg)
     
     ./kafka-console-producer.sh --broker-list my_kafka:9092 --topic test
     
@@ -19,7 +19,7 @@ img -f after_first_command
     ./kafka-console-consumer.sh --bootstrap-server my_kafka:9092 --topic test --group test --from-beginning
     
 
-img -f send_consume
+![send_consume](./img/send_consume.jpg)
 
 
 > another cmd
@@ -31,6 +31,8 @@ img -f send_consume
     ./kafka-console-consumer.sh --bootstrap-server my_kafka:9092 --topic my_logs --group my_logs --from-beginning
     
 
-img -f result
+![result](./img/result.jpg)
 
-img -f show_message
+### Add topic my_logs
+
+![add topic](./img/show_message.jpg)
