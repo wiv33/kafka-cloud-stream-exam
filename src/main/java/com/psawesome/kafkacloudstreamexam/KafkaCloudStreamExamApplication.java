@@ -49,56 +49,57 @@ public class KafkaCloudStreamExamApplication {
 
      */
 
-    public static void main(String[] args) {
-        SpringApplication.run(KafkaCloudStreamExamApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(KafkaCloudStreamExamApplication.class, args);
+  }
 
 
-    @Component
-    @RequiredArgsConstructor
-    public static class PageViewEventSource implements ApplicationRunner {
-        private final MessageChannel pageViewOut;
+  @Component
+  @RequiredArgsConstructor
+  public static class PageViewEventSource implements ApplicationRunner {
+    private final MessageChannel pageViewOut;
 
-        @Override
-        public void run(ApplicationArguments args) throws Exception {
-            List<String> names = Arrays.asList("mfisher", "dyser", "schacko", "abinlan", "ozhurakousky", "grussell");
-            List<String> pages = Arrays.asList("blong", "sitemap", "initializr", "news", "colophon", "about");
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+      List<String> names = Arrays.asList("mfisher", "dyser", "schacko", "abinlan", "ozhurakousky", "grussell");
+      List<String> pages = Arrays.asList("blong", "sitemap", "initializr", "news", "colophon", "about");
 
-            Runnable runnable = () -> {
-                String rPage = pages.get(ThreadLocalRandom.current().nextInt(pages.size()));
-                String rName = pages.get(ThreadLocalRandom.current().nextInt(names.size()));
+      Runnable runnable = () -> {
+        String rPage = pages.get(ThreadLocalRandom.current().nextInt(pages.size()));
+        String rName = pages.get(ThreadLocalRandom.current().nextInt(names.size()));
 
-                PageViewEvent pageViewEvent = new PageViewEvent(rName, rPage, Math.random() > .5 ? 10 : 1000);
-                Message<PageViewEvent> message = MessageBuilder
-                        .withPayload(pageViewEvent)
-                        .setHeader(KafkaHeaders.MESSAGE_KEY, pageViewEvent.getUserId().getBytes())
-                        .build();
+        PageViewEvent pageViewEvent = new PageViewEvent(rName, rPage, Math.random() > .5 ? 10 : 1000);
+        Message<PageViewEvent> message = MessageBuilder
+                .withPayload(pageViewEvent)
+                .setHeader(KafkaHeaders.MESSAGE_KEY, pageViewEvent.getUserId().getBytes())
+                .build();
 
-                try {
-                    this.pageViewOut.send(message);
-                    log.info("sent {}" , message.toString());
-                } catch (Exception e) {
-                    log.error(e.getMessage());
-                }
-            };
-            Executors.newScheduledThreadPool(1).scheduleAtFixedRate(runnable, 1, 1, TimeUnit.SECONDS);
+        try {
+          this.pageViewOut.send(message);
+          log.info("sent {}", message.toString());
+        } catch (Exception e) {
+          log.error(e.getMessage());
         }
+      };
+      Executors.newScheduledThreadPool(1).scheduleAtFixedRate(runnable, 1, 1, TimeUnit.SECONDS);
     }
+  }
 
 }
 
 
 interface AnalyticsBinding {
-    String PAGE_VIEW_OUT = "pvout";
+  String PAGE_VIEW_OUT = "pvout";
 
-    @Output
-    MessageChannel pageViewOut();
+  @Output
+  MessageChannel pageViewOut();
 }
 
 
 @Data
-@AllArgsConstructor @NoArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 class PageViewEvent {
-    private String userId, page;
-    private long duration;
+  private String userId, page;
+  private long duration;
 }
