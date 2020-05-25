@@ -27,7 +27,6 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-stream'
     implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka'
     implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka-streams'
-    compile group: 'org.apache.kafka', name: 'kafka-streams', version: '0.11.0.0'
     implementation 'org.springframework.kafka:spring-kafka'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
