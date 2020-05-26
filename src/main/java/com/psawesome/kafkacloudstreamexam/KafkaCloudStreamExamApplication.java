@@ -157,6 +157,7 @@ public class KafkaCloudStreamExamApplication {
               .foreach((key, value) -> log.info("{} = {}", key, value));
     }
   }
+/*
 
   @RestController
   @RequiredArgsConstructor
@@ -176,6 +177,7 @@ public class KafkaCloudStreamExamApplication {
       return counts;
     }
   }
+*/
 
 }
 
