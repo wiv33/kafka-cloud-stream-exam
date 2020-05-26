@@ -1,13 +1,12 @@
 package com.psawesome.kafkacloudstreamexam;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 /**
  * package: com.psawesome.kafkacloudstreamexam
@@ -43,13 +42,19 @@ public class KafkaConsumerTest {
 
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(config);
 
-        consumer.subscribe(Arrays.asList("click_log"));
+        consumer.subscribe(Collections.singletonList("pageViewOut"));
 
-        while (true) {
+
+        Stream.generate(() -> consumer.poll(Duration.ofMillis(500)))
+                .forEach(s ->
+                        s.forEach(v ->
+                                System.out.println("record = " + v.value())));
+
+        /*while (true) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
             for (ConsumerRecord<String, String> record : records) {
                 System.out.println("record = " + record.value());
             }
-        }
+        }*/
     }
 }
