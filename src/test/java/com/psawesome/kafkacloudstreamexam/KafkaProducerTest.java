@@ -43,7 +43,7 @@ public class KafkaProducerTest {
         config.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(config);
-        ProducerRecord<String, String> record = new ProducerRecord<>("click_log", "login");
+        ProducerRecord<String, String> record = new ProducerRecord<>("article_lock", "lock");
 //        ProducerRecord<String, String> record = new ProducerRecord<>("click_log", "1","login");
         producer.send(record);
 
