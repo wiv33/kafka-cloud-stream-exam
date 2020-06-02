@@ -18,9 +18,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * package: com.psawesome.kafkacloudstreamexam
@@ -129,7 +126,10 @@ public class KafkaProducerTest {
         return null;
       });
 
-      if (cnt.get() > 1000) break;
+      if (cnt.get() > 1000) {
+        es.shutdown();
+        break;
+      }
     }
 
     producer.close();
