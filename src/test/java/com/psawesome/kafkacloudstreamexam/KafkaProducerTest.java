@@ -2,12 +2,15 @@ package com.psawesome.kafkacloudstreamexam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.internals.DefaultPartitioner;
+import org.apache.kafka.common.Cluster;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -92,9 +96,10 @@ public class KafkaProducerTest {
   void testKafkaSendMessage() throws InterruptedException {
     Properties config = new Properties();
     config.put("bootstrap.servers", "localhost:9092");
-//    config.put("group.id", "article_lock");
     config.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
     config.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+    config.put("acks", "1");
+    config.put("retires", "3");
 
     KafkaProducer<String, String> producer = new KafkaProducer<>(config);
     while (true) {
@@ -150,4 +155,27 @@ public class KafkaProducerTest {
     private List<String> roles;
 
   }
+
+  class PurchaseKeyPartitioner extends DefaultPartitioner {
+    @Override
+    public int partition(String topic, Object key, byte[] keyBytes, Object value, byte[] valueBytes, Cluster cluster) {
+      Object newKey = null;
+      if (Objects.nonNull(key)) {
+        PurchaseKey purchaseKey = (PurchaseKey) key;
+        newKey = purchaseKey.getCustomerId();
+        keyBytes = ((String) newKey).getBytes();
+      }
+      return super.partition(topic, key, keyBytes, value, valueBytes, cluster);
+    }
+
+
+  }
+//PurchaseKey purchaseKey = new PurchaseKey("123456", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+  @Getter
+  @Setter
+  @AllArgsConstructor
+  class PurchaseKey {
+    private String customerId, transactionDate;
+  }
+
 }
