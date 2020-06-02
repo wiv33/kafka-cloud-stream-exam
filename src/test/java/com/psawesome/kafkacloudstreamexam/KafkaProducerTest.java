@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,10 +16,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -28,6 +27,7 @@ import java.util.stream.Stream;
  * author: PS
  * DATE: 2020-04-12 일요일 15:55
  */
+@Slf4j
 public class KafkaProducerTest {
   /*
       Ack = 0 빠른 전송, 메시지 손실 가능성 있음 (0.29ms)
@@ -74,12 +74,14 @@ public class KafkaProducerTest {
 
    */
 
+  AtomicInteger cnt;
   ExecutorService es;
   List<List<String>> rolesList;
   List<String> userName;
 
   @BeforeEach
   void setUp() throws Exception {
+    cnt = new AtomicInteger(0);
     es = Executors.newFixedThreadPool(20);
     List<String> sa = Arrays.asList("SA", "AT", "AB", "AA");
     List<String> at = Arrays.asList("AT", "BB", "CC", "AB");
@@ -98,7 +100,10 @@ public class KafkaProducerTest {
     config.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
     KafkaProducer<String, String> producer = new KafkaProducer<>(config);
-      Thread.sleep(3000);
+    while (true) {
+      if (cnt.getAndIncrement() % 7 == 0)
+        Thread.sleep(3000);
+      log.info("# Start submit");
       Future<?> article_lock = es.submit(() -> {
         long artSeq = ThreadLocalRandom.current().nextLong(0, 30);
         ObjectMapper mapper = new ObjectMapper();
@@ -114,7 +119,7 @@ public class KafkaProducerTest {
 
         try {
           s = mapper.writeValueAsString(lock);
-          System.out.println("s = " + s);
+          log.info("sent message : {}", s);
         } catch (JsonProcessingException e) {
           e.printStackTrace();
         }
@@ -124,8 +129,13 @@ public class KafkaProducerTest {
         return null;
       });
 
+      if (cnt.get() > 1000) break;
+    }
+
     producer.close();
 
+
+    es.awaitTermination(1000, TimeUnit.MINUTES);
   }
 
 
