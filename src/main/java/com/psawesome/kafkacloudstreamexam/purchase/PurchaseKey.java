@@ -1,7 +1,6 @@
 package com.psawesome.kafkacloudstreamexam.purchase;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
 @Data
 @AllArgsConstructor

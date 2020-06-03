@@ -1,5 +1,6 @@
 package com.psawesome.kafkacloudstreamexam.purchase.producer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.psawesome.kafkacloudstreamexam.purchase.PurchaseKey;
 import com.psawesome.kafkacloudstreamexam.purchase.PurchaseKeyPartitioner;
@@ -22,12 +23,12 @@ public class SimpleProducer {
     properties.put("retries", "3");
 //    properties.put("compression.type", "snappy");
     //This line in for demonstration purposes
-    properties.put("partitioner.class", PurchaseKeyPartitioner.class.getName());
+//    properties.put("partitioner.class", PurchaseKeyPartitioner.class.getName());
 
     //customer key 가 article ID 이면 좋겠네.
     PurchaseKey key = new PurchaseKey("1234", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
-    try (Producer<PurchaseKey, String> producer = new KafkaProducer<>(properties)) {
+    try (Producer<String, String> producer = new KafkaProducer<>(properties)) {
       // ProducerRecord value 는
       /*
         state: String
@@ -37,10 +38,12 @@ public class SimpleProducer {
        */
       String val = "value";
 //      val = new ObjectMapper().writeValueAsString(ArticleLock.builder().build());
-      ProducerRecord<PurchaseKey, String> record = new ProducerRecord<>("some-topic", key, val);
+      ProducerRecord<String, String> record = new ProducerRecord<>("some-topic", new ObjectMapper().writeValueAsString(key), val);
       Callback callback = (metadata, exception) -> Objects.requireNonNull(exception);
 
       Future<RecordMetadata> send = producer.send(record, callback);
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
     }
   }
 

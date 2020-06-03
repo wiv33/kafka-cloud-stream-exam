@@ -14,7 +14,7 @@ public class PurchaseKeyPartitioner extends DefaultPartitioner {
       newKey = purchaseKey.getCustomerId();
       keyBytes = ((String) newKey).getBytes();
     }
-    return super.partition(topic, key, keyBytes, value, valueBytes, cluster);
+    return super.partition(topic, newKey, keyBytes, value, valueBytes, cluster);
   }
 
 
