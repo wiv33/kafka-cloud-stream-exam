@@ -2,8 +2,6 @@ package com.psawesome.kafkacloudstreamexam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.psawesome.kafkacloudstreamexam.purchase.PurchaseKey;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,8 +10,6 @@ import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
-import org.apache.kafka.clients.producer.internals.DefaultPartitioner;
-import org.apache.kafka.common.Cluster;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -106,6 +102,7 @@ public class KafkaProducerTest {
       }
       log.info("metadata is {}", metadata.toString());
     });
+
     while (true) {
       if (cnt.getAndIncrement() % 7 == 0)
         Thread.sleep(3000);
@@ -155,7 +152,6 @@ public class KafkaProducerTest {
     config.put("max.in.flight.requests.per.connection", "1"); // 순서가 중요할 때
     config.put("acks", "1");
     config.put("retires", "3");
-    config.put("auto.offset.reset", "latest"); // offset 관리
     return config;
   }
 
