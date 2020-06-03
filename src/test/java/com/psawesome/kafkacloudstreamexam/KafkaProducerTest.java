@@ -2,13 +2,16 @@ package com.psawesome.kafkacloudstreamexam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.psawesome.kafkacloudstreamexam.purchase.PurchaseKey;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.clients.producer.internals.DefaultPartitioner;
 import org.apache.kafka.common.Cluster;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,14 +97,15 @@ public class KafkaProducerTest {
 
   @Test
   void testKafkaSendMessage() throws InterruptedException {
-    Properties config = new Properties();
-    config.put("bootstrap.servers", "localhost:9092");
-    config.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-    config.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-    config.put("acks", "1");
-    config.put("retires", "3");
+    Properties config = getProperties();
 
     KafkaProducer<String, String> producer = new KafkaProducer<>(config);
+    Callback callback = ((metadata, exception) -> {
+      if (Objects.nonNull(exception)) {
+        log.error("encountered exception : {}", exception.getMessage());
+      }
+      log.info("metadata is {}", metadata.toString());
+    });
     while (true) {
       if (cnt.getAndIncrement() % 7 == 0)
         Thread.sleep(3000);
@@ -127,7 +131,7 @@ public class KafkaProducerTest {
         }
         // 기사 번호 / 날짜 / 기자 / 가진 권한
         ProducerRecord<String, String> record = new ProducerRecord<>("article_lock", s);
-        producer.send(record);
+        Future<RecordMetadata> send = producer.send(record, callback);
         return null;
       });
 
@@ -143,6 +147,18 @@ public class KafkaProducerTest {
     es.awaitTermination(1000, TimeUnit.MINUTES);
   }
 
+  private Properties getProperties() {
+    Properties config = new Properties();
+    config.put("bootstrap.servers", "localhost:9092");
+    config.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+    config.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+    config.put("max.in.flight.requests.per.connection", "1"); // 순서가 중요할 때
+    config.put("acks", "1");
+    config.put("retires", "3");
+    config.put("auto.offset.reset", "latest"); // offset 관리
+    return config;
+  }
+
 
   @Setter
   @Getter
@@ -156,26 +172,6 @@ public class KafkaProducerTest {
 
   }
 
-  class PurchaseKeyPartitioner extends DefaultPartitioner {
-    @Override
-    public int partition(String topic, Object key, byte[] keyBytes, Object value, byte[] valueBytes, Cluster cluster) {
-      Object newKey = null;
-      if (Objects.nonNull(key)) {
-        PurchaseKey purchaseKey = (PurchaseKey) key;
-        newKey = purchaseKey.getCustomerId();
-        keyBytes = ((String) newKey).getBytes();
-      }
-      return super.partition(topic, key, keyBytes, value, valueBytes, cluster);
-    }
-
-
-  }
 //PurchaseKey purchaseKey = new PurchaseKey("123456", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-  @Getter
-  @Setter
-  @AllArgsConstructor
-  class PurchaseKey {
-    private String customerId, transactionDate;
-  }
 
 }
