@@ -3,7 +3,6 @@ package com.psawesome.kafkacloudstreamexam.purchase.producer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.psawesome.kafkacloudstreamexam.purchase.PurchaseKey;
-import com.psawesome.kafkacloudstreamexam.purchase.PurchaseKeyPartitioner;
 import org.apache.kafka.clients.producer.*;
 
 import java.time.LocalDateTime;
@@ -13,7 +12,10 @@ import java.util.Properties;
 import java.util.concurrent.Future;
 
 public class SimpleProducer {
+/*
+  ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic some-topic --from-beginning --property "parse.key=true" --property "key.separate=:" --property "print.key=true" --formatter kafka.tools.DefaultMessageFormatter
 
+ */
   public static void main(String[] args) {
     Properties properties = new Properties();
     properties.put("bootstrap.servers", "localhost:9092");
