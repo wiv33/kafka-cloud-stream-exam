@@ -5,15 +5,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
+import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.state.KeyValueIterator;
-import org.apache.kafka.streams.state.QueryableStoreTypes;
-import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
+import org.apache.kafka.streams.processor.StateStore;
+import org.apache.kafka.streams.state.*;
+import org.apache.kafka.streams.state.internals.GlobalStateStoreProvider;
 import org.apache.kafka.streams.state.internals.QueryableStoreProvider;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.kafka.streams.state.internals.StateStoreProvider;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -22,6 +24,7 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.Input;
 import org.springframework.cloud.stream.annotation.Output;
 import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -30,6 +33,7 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -157,16 +161,39 @@ public class KafkaCloudStreamExamApplication {
               .foreach((key, value) -> log.info("{} = {}", key, value));
     }
   }
-/*
+
+  @Bean
+  QueryableStoreProvider getQueryableStoreProvider () {
+    KeyValueBytesStoreSupplier stateStore = Stores.inMemoryKeyValueStore(AnalyticsBinding.PAGE_COUNT_MV);
+    StoreBuilder<KeyValueStore<String, String>> storeBuilder = Stores.keyValueStoreBuilder(stateStore, Serdes.String(), Serdes.String());
+    StreamsBuilder builder = new StreamsBuilder();
+    builder.addStateStore(storeBuilder);
+    builder.stream("pageViewOut");
+
+    StateStoreProvider stateStoreProvider = new StateStoreProvider() {
+      @Override
+      public <T> List<T> stores(String storeName, QueryableStoreType<T> queryableStoreType) {
+//        ReadOnlyKeyValueStore<String, Long> result =
+        return List.of();
+
+      }
+    };
+    HashMap<String, StateStore> stringStateStoreHashMap = new HashMap<>();
+    GlobalStateStoreProvider globalStateStoreProvider = new GlobalStateStoreProvider(stringStateStoreHashMap);
+    return new QueryableStoreProvider(List.of(stateStoreProvider), globalStateStoreProvider);
+  }
 
   @RestController
-  @RequiredArgsConstructor
   public static class CountRestController {
 
     private final QueryableStoreProvider registry;
 
+    public CountRestController(QueryableStoreProvider registry) {
+      this.registry = registry;
+    }
+
     @GetMapping("/counts")
-    public Map<String, Long> counts() {
+    public Flux<Map<String, Long>> counts() {
       Map<String, Long> counts = new HashMap<>();
       ReadOnlyKeyValueStore<String, Long> store = this.registry.getStore(AnalyticsBinding.PAGE_COUNT_MV, QueryableStoreTypes.keyValueStore());
       KeyValueIterator<String, Long> all = store.all();
@@ -174,10 +201,9 @@ public class KafkaCloudStreamExamApplication {
         KeyValue<String, Long> value = all.next();
         counts.put(value.key, value.value);
       }
-      return counts;
+      return Flux.just(counts);
     }
   }
-*/
 
 }
 
