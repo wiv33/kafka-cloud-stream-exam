@@ -203,6 +203,12 @@ public class KafkaCloudStreamExamApplication {
       }
       return Flux.just(counts);
     }
+
+    @GetMapping("/store-counts")
+    public Flux<Map<String, Long>> builderCounts() {
+      // TODO getStore 개념을 익힌 후 이어서 진행
+      return Flux.just();
+    }
   }
 
 }
