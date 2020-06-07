@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
@@ -195,20 +196,17 @@ public class KafkaCloudStreamExamApplication {
     @GetMapping("/counts")
     public Flux<Map<String, Long>> counts() {
       Map<String, Long> counts = new HashMap<>();
-      ReadOnlyKeyValueStore<String, Long> store = this.registry.getStore(AnalyticsBinding.PAGE_COUNT_MV, QueryableStoreTypes.keyValueStore());
-      KeyValueIterator<String, Long> all = store.all();
-      while (all.hasNext()) {
-        KeyValue<String, Long> value = all.next();
-        counts.put(value.key, value.value);
-      }
+//      ReadOnlyKeyValueStore<String, Long> store = this.registry.getStore(AnalyticsBinding.PAGE_COUNT_MV, QueryableStoreTypes.keyValueStore());
+//      KeyValueIterator<String, Long> all = store.all();
+//      while (all.hasNext()) {
+//        KeyValue<String, Long> value = all.next();
+//        counts.put(value.key, value.value);
+//      }
+      KStream<String, Long> stream = new StreamsBuilder().stream(AnalyticsBinding.PAGE_COUNT_MV, Consumed.with(Serdes.String(), Serdes.Long()));
+      stream.foreach(counts::put);
       return Flux.just(counts);
     }
 
-    @GetMapping("/store-counts")
-    public Flux<Map<String, Long>> builderCounts() {
-      // TODO getStore 개념을 익힌 후 이어서 진행
-      return Flux.just();
-    }
   }
 
 }
