@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
@@ -159,12 +158,12 @@ public class KafkaCloudStreamExamApplication {
     @StreamListener
     public void process(@Input(AnalyticsBinding.PAGE_COUNT_IN) KTable<String, Long> counts) {
       counts.toStream()
-              .foreach((key, value) -> log.info("{} = {}", key, value));
+              .foreach((key, value) -> log.info("ktable key val is {} = {}", key, value));
     }
   }
 
   @Bean
-  QueryableStoreProvider getQueryableStoreProvider () {
+  QueryableStoreProvider getQueryableStoreProvider() {
     KeyValueBytesStoreSupplier stateStore = Stores.inMemoryKeyValueStore(AnalyticsBinding.PAGE_COUNT_MV);
     StoreBuilder<KeyValueStore<String, String>> storeBuilder = Stores.keyValueStoreBuilder(stateStore, Serdes.String(), Serdes.String());
     StreamsBuilder builder = new StreamsBuilder();
@@ -202,8 +201,14 @@ public class KafkaCloudStreamExamApplication {
 //        KeyValue<String, Long> value = all.next();
 //        counts.put(value.key, value.value);
 //      }
-      KStream<String, Long> stream = new StreamsBuilder().stream(AnalyticsBinding.PAGE_COUNT_MV, Consumed.with(Serdes.String(), Serdes.Long()));
-      stream.foreach(counts::put);
+      KeyValueBytesStoreSupplier stateStore = Stores.inMemoryKeyValueStore(AnalyticsBinding.PAGE_COUNT_MV);
+      StoreBuilder<KeyValueStore<String, Long>> storeBuilder = Stores.keyValueStoreBuilder(stateStore, Serdes.String(), Serdes.Long());
+      KeyValueStore<String, Long> build = storeBuilder.build();
+      KeyValueIterator<String, Long> all = build.all();
+      while (all.hasNext()) {
+        KeyValue<String, Long> value = all.next();
+        counts.put(value.key, value.value);
+      }
       return Flux.just(counts);
     }
 
