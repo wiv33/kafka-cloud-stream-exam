@@ -27,7 +27,6 @@ public class SimpleProducer {
     //This line in for demonstration purposes
 //    properties.put("partitioner.class", PurchaseKeyPartitioner.class.getName());
 
-    //customer key 가 article ID 이면 좋겠네.
     PurchaseKey key = new PurchaseKey("1234", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
     try (Producer<String, String> producer = new KafkaProducer<>(properties)) {
@@ -39,7 +38,6 @@ public class SimpleProducer {
         변경 당한 사람: String (nullable)
        */
       String val = "value";
-//      val = new ObjectMapper().writeValueAsString(ArticleLock.builder().build());
       ProducerRecord<String, String> record = new ProducerRecord<>("some-topic", new ObjectMapper().writeValueAsString(key), val);
       Callback callback = (metadata, exception) -> Objects.requireNonNull(exception);
 

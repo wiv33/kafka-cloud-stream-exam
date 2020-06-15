@@ -227,7 +227,7 @@ public class KafkaCloudStreamExamApplication {
       builder.stream(AnalyticsBinding.PAGE_COUNT_MV, Consumed.with(serde, serde));
 
       KafkaStreams kafkaStreams = new KafkaStreams(builder.build(), config);
-      kafkaStreams.store()
+//      kafkaStreams.store()
 
       return Flux.just();
     }
