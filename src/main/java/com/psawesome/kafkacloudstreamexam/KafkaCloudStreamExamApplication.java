@@ -5,9 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Materialized;
@@ -35,10 +39,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -212,6 +213,24 @@ public class KafkaCloudStreamExamApplication {
       return Flux.just(counts);
     }
 
+    private Flux<Map<String, Long>> countsBody() {
+
+      Properties config = new Properties();
+      config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+      config.put(StreamsConfig.APPLICATION_ID_CONFIG, "pageViewOut-test");
+//      String serde = Serdes.String().getClass().getName();
+//      config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, serde);
+//      config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, serde);
+
+      StreamsBuilder builder = new StreamsBuilder();
+      Serde<?> serde = Serdes.String();
+      builder.stream(AnalyticsBinding.PAGE_COUNT_MV, Consumed.with(serde, serde));
+
+      KafkaStreams kafkaStreams = new KafkaStreams(builder.build(), config);
+      kafkaStreams.store()
+
+      return Flux.just();
+    }
   }
 
 }
