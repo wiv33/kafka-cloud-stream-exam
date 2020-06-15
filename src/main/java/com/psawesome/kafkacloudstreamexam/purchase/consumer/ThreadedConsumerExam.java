@@ -36,7 +36,7 @@ public class ThreadedConsumerExam {
   private Runnable getConsumerThread(Properties properties) {
     return () -> {
       try (Consumer<String, String> consumer = new KafkaConsumer<>(properties)) {
-        consumer.subscribe(Collections.singletonList("test-topic"));
+        consumer.subscribe(Collections.singletonList("some-topic"));
         while (!doneConsuming) {
           ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(5000));
           for (ConsumerRecord<String, String> record : records) {
