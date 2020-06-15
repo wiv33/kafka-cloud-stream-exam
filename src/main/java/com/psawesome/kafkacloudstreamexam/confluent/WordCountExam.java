@@ -1,6 +1,11 @@
 package com.psawesome.kafkacloudstreamexam.confluent;
 
-import jdk.jfr.SettingDefinition;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.kafka.clients.producer.Callback;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -9,11 +14,25 @@ import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Produced;
 import org.apache.kafka.test.TestUtils;
-import org.springframework.integration.kafka.dsl.Kafka;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.Future;
 import java.util.regex.Pattern;
+
+/**
+ * 2) Create the input and output topics used by this example.
+ * <pre>
+ * {@code
+ * $ bin/kafka-topics --create --topic streams-plaintext-input \
+ *                    --zookeeper localhost:2181 --partitions 1 --replication-factor 1
+ * $ bin/kafka-topics --create --topic streams-wordcount-output \
+ *                    --zookeeper localhost:2181 --partitions 1 --replication-factor 1
+ * }</pre>
+ * <p>
+ * $ bin/kafka-console-producer --broker-list localhost:9092 --topic streams-plaintext-input
+ */
 
 public class WordCountExam {
   public static final String INPUT_TOPIC = "streams-plaintext-input";
@@ -21,6 +40,8 @@ public class WordCountExam {
 
   public static void main(String[] args) {
     final String BOOTSTRAP_SERVER = "localhost:9092";
+
+    generateWord();
 
     final Properties config = getStreamsConfiguration(BOOTSTRAP_SERVER);
 
@@ -35,6 +56,38 @@ public class WordCountExam {
 
     Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
 
+  }
+
+  private static void generateWord() {
+    /*
+       hello kafka streams<ENTER>
+       all streams lead to kafka<ENTER>
+       join kafka summit<ENTER>
+    */
+
+    /*
+      run command
+      kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic streams-wordcount-output --from-beginning --property print.key=true --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
+    */
+
+    try (KafkaProducer<String, String> producer = new KafkaProducer<>(producerConfig())) {
+      Arrays.asList("hello kafka streams", "all streams lead to kafka", "join kafka summit")
+              .forEach(v -> {
+                ProducerRecord<String, String> record = new ProducerRecord<>("streams-plaintext-input", v);
+                Callback callback = (metadata, exception) -> Objects.requireNonNull(exception);
+                Future<RecordMetadata> send = producer.send(record, callback);
+              });
+    }
+  }
+
+  private static Properties producerConfig() {
+    Properties properties = new Properties();
+    properties.put("bootstrap.servers", "localhost:9092");
+    properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+    properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+    properties.put("acks", "all");
+    properties.put("retries", "3");
+    return properties;
   }
 
   private static void createWordCountStream(final StreamsBuilder builder) {
