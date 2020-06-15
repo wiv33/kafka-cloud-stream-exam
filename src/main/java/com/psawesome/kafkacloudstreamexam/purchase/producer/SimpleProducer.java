@@ -12,10 +12,17 @@ import java.util.Properties;
 import java.util.concurrent.Future;
 
 public class SimpleProducer {
-/*
-  ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic some-topic --from-beginning --property "parse.key=true" --property "key.separate=:" --property "print.key=true" --formatter kafka.tools.DefaultMessageFormatter
+  /*
+    ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic some-topic --from-beginning --property "parse.key=true" --property "key.separate=:" --property "print.key=true" --formatter kafka.tools.DefaultMessageFormatter
 
- */
+    kafka-console-consumer.sh --bootstrap-server localhost:9092 \
+    --topic some-topic --from-beginning --formatter kafka.tools.DefaultMessageFormatter \
+    --property print.key=true \
+    --property print.value=true \
+    --property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer \
+    --property value.deserializer=org.apache.kafka.common.serialization.StringDeserializer
+
+   */
   public static void main(String[] args) {
     Properties properties = new Properties();
     properties.put("bootstrap.servers", "localhost:9092");
