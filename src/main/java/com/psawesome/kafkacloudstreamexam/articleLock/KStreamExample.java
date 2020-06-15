@@ -27,34 +27,4 @@ public class KStreamExample {
     article_lock.foreach((s, d) -> log.info("key is {}, value is {}", s, d));
 
   }
-
-  public void globalKTableRun() {
-    StreamsBuilder builder = new StreamsBuilder();
-    GlobalKTable<String, Long> wordCounts = builder.globalTable(
-            "word-counts-input-topic",
-            Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as(
-                    "word-counts-global-store")
-                    .withKeySerde(Serdes.String())
-                    .withValueSerde(Serdes.Long())
-    );
-  }
-
-  public void kStreamToKStreamArray_branch() {
-    StreamsBuilder builder = new StreamsBuilder();
-    KStream<String, Long> stream = builder.stream("word-counts",
-            Consumed.with(
-                    Serdes.String(),
-                    Serdes.Long()
-            )
-    );
-
-    KStream<String, Long>[] branch = stream.branch(
-            (key, value) -> key.startsWith("A"),
-            (key, value) -> key.startsWith("B"),
-            (key, value) -> value > 3
-    );
-    for (KStream<String, Long> stringLongKStream : branch) {
-
-    }
-  }
 }
