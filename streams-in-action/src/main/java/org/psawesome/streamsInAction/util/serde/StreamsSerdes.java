@@ -30,7 +30,7 @@ public class StreamsSerdes {
   }
 
   public static Serde<StockTickerData> StockTickerSerde() {
-    return  new StockTickerSerde();
+    return new StockTickerSerde();
   }
 
   public static Serde<StockTransaction> StockTransactionSerde() {
@@ -70,7 +70,7 @@ public class StreamsSerdes {
   }
 
   public static Serde<List<StockTransaction>> TransactionsListSerde() {
-    return  new TransactionsListSerde();
+    return new TransactionsListSerde();
   }
 
 
@@ -79,8 +79,8 @@ public class StreamsSerdes {
   }
 
   public static final class PurchaseKeySerde extends WrapperSerde<PurchaseKey> {
-    public PurchaseKeySerde(){
-      super(new JsonSerializer<>(), new JsonDeserializer<>(PurchaseKey.class) );
+    public PurchaseKeySerde() {
+      super(new JsonSerializer<>(), new JsonDeserializer<>(PurchaseKey.class));
     }
   }
 
@@ -109,7 +109,7 @@ public class StreamsSerdes {
   }
 
   public static final class StockTransactionSerde extends WrapperSerde<StockTransaction> {
-    public StockTransactionSerde(){
+    public StockTransactionSerde() {
       super(new JsonSerializer<>(), new JsonDeserializer<>(StockTransaction.class));
     }
   }
@@ -146,27 +146,33 @@ public class StreamsSerdes {
   }
 
   public static final class EventTransactionTupleSerde extends WrapperSerde<Tuple<List<ClickEvent>, List<StockTransaction>>> {
-    private static final Type tupleType = new TypeToken<Tuple<List<ClickEvent>, List<StockTransaction>>>(){}.getType();
+    private static final Type tupleType = new TypeToken<Tuple<List<ClickEvent>, List<StockTransaction>>>() {
+    }.getType();
+
     public EventTransactionTupleSerde() {
       super(new JsonSerializer<>(), new JsonDeserializer<>(tupleType));
     }
   }
 
   public static final class ClickEventSerde extends WrapperSerde<ClickEvent> {
-    public ClickEventSerde () {
+    public ClickEventSerde() {
       super(new JsonSerializer<>(), new JsonDeserializer<>(ClickEvent.class));
     }
   }
 
-  public static final class TransactionsListSerde extends  WrapperSerde<List<StockTransaction>>  {
-    private static final Type listType = new TypeToken<List<StockTransaction>>(){}.getType();
+  public static final class TransactionsListSerde extends WrapperSerde<List<StockTransaction>> {
+    private static final Type listType = new TypeToken<List<StockTransaction>>() {
+    }.getType();
+
     public TransactionsListSerde() {
       super(new JsonSerializer<>(), new JsonDeserializer<>(listType));
     }
   }
 
-  public static final class EventsListSerde extends  WrapperSerde<List<ClickEvent>>  {
-    private static final Type listType = new TypeToken<List<ClickEvent>>(){}.getType();
+  public static final class EventsListSerde extends WrapperSerde<List<ClickEvent>> {
+    private static final Type listType = new TypeToken<List<ClickEvent>>() {
+    }.getType();
+
     public EventsListSerde() {
       super(new JsonSerializer<>(), new JsonDeserializer<>(listType));
     }
