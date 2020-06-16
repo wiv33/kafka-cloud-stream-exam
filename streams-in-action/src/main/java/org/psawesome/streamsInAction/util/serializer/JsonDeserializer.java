@@ -16,11 +16,10 @@
 
 package org.psawesome.streamsInAction.util.serializer;
 
-import bbejeck.collectors.FixedSizePriorityQueue;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.psawesome.kafkacloudstreamexam.streamsInAction.serializer.FixedSizePriorityQueueAdapter;
 import org.apache.kafka.common.serialization.Deserializer;
+import org.psawesome.streamsInAction.collectors.FixedSizePriorityQueue;
 
 import java.lang.reflect.Type;
 import java.util.Map;

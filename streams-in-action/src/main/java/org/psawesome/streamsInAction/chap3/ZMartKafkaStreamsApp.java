@@ -1,10 +1,12 @@
 package org.psawesome.streamsInAction.chap3;
 
-import com.psawesome.kafkacloudstreamexam.streamsInAction.serde.StreamsSerdes;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.processor.WallclockTimestampExtractor;
+import org.psawesome.streamsInAction.model.Purchase;
+import org.psawesome.streamsInAction.util.serde.StreamsSerdes;
 
 import java.util.Properties;
 
@@ -13,7 +15,7 @@ public class ZMartKafkaStreamsApp {
 
   public static void main(String[] args) {
     getProperties();
-    StreamsSerdes.PurchaseSerde();
+    Serde<Purchase> purchaseSerde = StreamsSerdes.PurchaseSerde();
   }
 
   private static Properties getProperties() {

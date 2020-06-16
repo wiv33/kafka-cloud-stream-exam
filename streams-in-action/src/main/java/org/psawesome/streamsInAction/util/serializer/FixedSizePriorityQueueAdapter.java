@@ -1,12 +1,12 @@
 package org.psawesome.streamsInAction.util.serializer;
 
 
-import bbejeck.collectors.FixedSizePriorityQueue;
-import bbejeck.model.ShareVolume;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import org.psawesome.streamsInAction.collectors.FixedSizePriorityQueue;
+import org.psawesome.streamsInAction.model.ShareVolume;
 
 import java.io.IOException;
 import java.util.ArrayList;

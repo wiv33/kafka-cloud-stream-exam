@@ -1,11 +1,11 @@
 package org.psawesome.streamsInAction.util.datagen;
 
-import bbejeck.model.Currency;
-import bbejeck.model.*;
 import com.github.javafaker.ChuckNorris;
 import com.github.javafaker.Faker;
 import com.github.javafaker.Finance;
 import com.github.javafaker.Name;
+import org.psawesome.streamsInAction.model.Currency;
+import org.psawesome.streamsInAction.model.*;
 
 import java.text.DecimalFormat;
 import java.time.Instant;
@@ -112,7 +112,7 @@ public class DataGenerator {
         List<BeerPurchase> beerPurchases = new ArrayList<>(number);
         Faker faker = new Faker();
         for (int i = 0; i < number; i++) {
-            Currency currency = Currency.values()[faker.number().numberBetween(1,4)];
+            org.psawesome.streamsInAction.model.Currency currency = Currency.values()[faker.number().numberBetween(1,4)];
             String beerType = faker.beer().name();
             int cases = faker.number().numberBetween(1,15);
             double totalSale = faker.number().randomDouble(3,12, 200);

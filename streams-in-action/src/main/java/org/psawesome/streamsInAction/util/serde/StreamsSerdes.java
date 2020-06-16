@@ -1,5 +1,20 @@
 package org.psawesome.streamsInAction.util.serde;
 
+import com.google.gson.reflect.TypeToken;
+import org.apache.kafka.common.serialization.Deserializer;
+import org.apache.kafka.common.serialization.Serde;
+import org.apache.kafka.common.serialization.Serializer;
+import org.psawesome.streamsInAction.collectors.FixedSizePriorityQueue;
+import org.psawesome.streamsInAction.model.*;
+import org.psawesome.streamsInAction.util.collection.Tuple;
+import org.psawesome.streamsInAction.util.serializer.JsonDeserializer;
+import org.psawesome.streamsInAction.util.serializer.JsonSerializer;
+
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
+
+
 public class StreamsSerdes {
 
   public static Serde<PurchasePattern> PurchasePatternSerde() {
