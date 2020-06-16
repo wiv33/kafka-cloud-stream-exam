@@ -1,6 +1,8 @@
 # kafka-cloud-stream-exam
 
-## Wating until 6/14
+### Waiting until 6/14
+
+## Running...
 
 ### ec2 - kafka cluster
 
