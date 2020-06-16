@@ -1,6 +1,7 @@
 package org.psawesome.streamsInAction.model;
 
 import java.time.Instant;
+import java.util.Objects;
 
 
 public class ClickEvent {
@@ -43,9 +44,9 @@ public class ClickEvent {
 
         ClickEvent that = (ClickEvent) o;
 
-        if (symbol != null ? !symbol.equals(that.symbol) : that.symbol != null) return false;
-        if (link != null ? !link.equals(that.link) : that.link != null) return false;
-        return timestamp != null ? timestamp.equals(that.timestamp) : that.timestamp == null;
+        if (!Objects.equals(symbol, that.symbol)) return false;
+        if (!Objects.equals(link, that.link)) return false;
+        return Objects.equals(timestamp, that.timestamp);
     }
 
     @Override

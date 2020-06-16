@@ -1,13 +1,13 @@
 package org.psawesome.streamsInAction.webserver;
 
 
-import bbejeck.model.CustomerTransactions;
 import com.google.gson.Gson;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.Windowed;
 import org.apache.kafka.streams.state.*;
+import org.psawesome.streamsInAction.model.CustomerTransactions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Spark;
