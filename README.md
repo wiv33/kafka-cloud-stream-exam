@@ -7,7 +7,7 @@
 ### ec2 - kafka cluster
 
 1. EC2 login
-2. create EC2 - three instance
+2. create EC2 - three instances
 3. wget https://downloads.apache.org/zookeeper/zookeeper-3.6.1/apache-zookeeper-3.6.1-bin.tar.gz
   tar xvf apache-zookeeper-3.6.1-bin.tar.gz
 4. settings zookeepers
