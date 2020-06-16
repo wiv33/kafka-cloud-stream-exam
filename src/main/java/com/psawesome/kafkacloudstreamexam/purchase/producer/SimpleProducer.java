@@ -37,13 +37,6 @@ public class SimpleProducer {
     PurchaseKey key = new PurchaseKey("1234", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
     try (Producer<String, String> producer = new KafkaProducer<>(properties)) {
-      // ProducerRecord value 는
-      /*
-        state: String
-        modified state by user: String
-        update time: String
-        변경 당한 사람: String (nullable)
-       */
       String val = "value";
       ProducerRecord<String, String> record = new ProducerRecord<>("some-topic", new ObjectMapper().writeValueAsString(key), val);
       Callback callback = (metadata, exception) -> Objects.requireNonNull(exception);
