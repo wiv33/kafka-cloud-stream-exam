@@ -1,4 +1,4 @@
-package com.psawesome.kafkacloudstreamexam.purchase;
+package com.psawesome.kafkacloudstreamexam.purchase.chap2;
 
 import org.apache.kafka.clients.producer.internals.DefaultPartitioner;
 import org.apache.kafka.common.Cluster;

@@ -1,8 +1,8 @@
-package com.psawesome.kafkacloudstreamexam.purchase.producer;
+package com.psawesome.kafkacloudstreamexam.purchase.chap2.producer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.psawesome.kafkacloudstreamexam.purchase.PurchaseKey;
+import com.psawesome.kafkacloudstreamexam.purchase.chap2.PurchaseKey;
 import org.apache.kafka.clients.producer.*;
 
 import java.time.LocalDateTime;

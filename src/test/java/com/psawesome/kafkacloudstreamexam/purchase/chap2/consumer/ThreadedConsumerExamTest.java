@@ -1,4 +1,4 @@
-package com.psawesome.kafkacloudstreamexam.purchase.consumer;
+package com.psawesome.kafkacloudstreamexam.purchase.chap2.consumer;
 
 import org.junit.jupiter.api.Test;
 
