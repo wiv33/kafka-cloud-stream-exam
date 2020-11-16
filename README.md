@@ -1,6 +1,6 @@
 # kafka-cloud-stream-exam
 
-### Waiting until 6/14
+### ~~~Waiting until 6/14~~~
 
 ## Running...
 
