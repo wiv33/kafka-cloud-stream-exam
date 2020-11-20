@@ -8,7 +8,11 @@ import org.apache.kafka.common.serialization.StringSerializer;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * package: com.psawesome.plainproducer
@@ -17,14 +21,18 @@ import java.util.concurrent.Future;
  */
 @Slf4j
 public class ProducerExam {
-    public static void main(String[] args) {
+    static final String PUBLIC_IP = "localhost";
 
+    public static void main(String[] args) {
         var mapper = new ObjectMapper();
         var message = Map.of(
-                "id", "1",
+                "id", UUID.randomUUID().toString(),
                 "name", "strings");
 
-        var bootstrapServers = "localhost:9092";
+        final String bootstrapServers = IntStream.range(9092, 9093)
+                .mapToObj(i -> String.format("%s:%d", PUBLIC_IP,i))
+                .collect(Collectors.joining(","));
+        System.out.println("bootstrapServers = " + bootstrapServers);
         final Map<String, Object> properties =
                 Map.of(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
                         ProducerConfig.CLIENT_ID_CONFIG, "sender-test-java",
@@ -42,14 +50,17 @@ public class ProducerExam {
         });
 
         try {
-            final ProducerRecord<String, String> record = new ProducerRecord<>("word2vec-nlp-tutorial",
+            final ProducerRecord<String, String> record = new ProducerRecord<>("test-java",
                     mapper.writeValueAsString(message));
             Future<RecordMetadata> send = producer.send(record, callback);
-            producer.flush();
-        } catch (JsonProcessingException e) {
+            final RecordMetadata recordMetadata = send.get();
+            System.out.println(recordMetadata.toString());
+        } catch (JsonProcessingException | InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
+        System.out.println("close");
+        producer.close();
 
     }
 }
