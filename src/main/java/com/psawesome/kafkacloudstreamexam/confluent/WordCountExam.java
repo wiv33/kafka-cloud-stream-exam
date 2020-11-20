@@ -35,13 +35,18 @@ import java.util.regex.Pattern;
 public class WordCountExam {
   public static final String INPUT_TOPIC = "streams-plaintext-input";
   public static final String OUTPUT_TOPIC = "streams-wordcount-output";
+  static final String BOOTSTRAP_SERVERS;
+
+  static {
+    final String publicIP = "52.79.184.210";
+    BOOTSTRAP_SERVERS = String.format("%s:9092,%s:9093,%s:9094", publicIP, publicIP, publicIP) ;
+  }
 
   public static void main(String[] args) {
-    final String BOOTSTRAP_SERVER = "localhost:9092";
 
     generateWord();
 
-    final Properties config = getStreamsConfiguration(BOOTSTRAP_SERVER);
+    final Properties config = getStreamsConfiguration(BOOTSTRAP_SERVERS);
 
     StreamsBuilder builder = new StreamsBuilder();
     createWordCountStream(builder);
@@ -80,7 +85,7 @@ public class WordCountExam {
 
   private static Properties producerConfig() {
     Properties properties = new Properties();
-    properties.put("bootstrap.servers", "localhost:9092");
+    properties.put("bootstrap.servers", BOOTSTRAP_SERVERS);
     properties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
     properties.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
     properties.put("acks", "all");
@@ -102,9 +107,9 @@ public class WordCountExam {
   }
 
 
-  private static Properties getStreamsConfiguration(final String bootstrap_server) {
+  private static Properties getStreamsConfiguration(final String bootstrap_servers) {
     Properties config = new Properties();
-    config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrap_server);
+    config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrap_servers);
 
     config.put(StreamsConfig.APPLICATION_ID_CONFIG, "wordcount-lambda-example");
     config.put(StreamsConfig.CLIENT_ID_CONFIG, "wordcount-lambda-example-client");

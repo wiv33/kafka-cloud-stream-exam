@@ -3,8 +3,8 @@ package org.psawesome.streamsInAction.util.db;
 
 import bbejeck.model.PublicTradedCompany;
 import bbejeck.model.StockTransaction;
-import bbejeck.util.datagen.DataGenerator;
 import org.h2.tools.Server;
+import org.psawesome.streamsInAction.util.datagen.DataGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
