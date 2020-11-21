@@ -2,15 +2,14 @@ package com.psawesome.plainproducer;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import reactor.core.publisher.Flux;
 
+import java.time.Duration;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Properties;
+import java.util.stream.Stream;
 
 /**
  * package: com.psawesome.plainproducer
@@ -20,34 +19,27 @@ import java.util.Properties;
 @Slf4j
 public class ConsumerExam {
 
-    public static void main(String[] args) {
-        final Properties config = new Properties();
-        config.put(StreamsConfig.APPLICATION_ID_CONFIG, "test-java-app");
-        config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+  public static void main(String[] args) {
+    final String IP = "localhost";
+    final String bootstrapServers = String.format("%s:9092", IP);
 
-        final Map<String, Object> properties = Map.of(
-                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092",
-                ConsumerConfig.GROUP_ID_CONFIG, "test-java-consumer",
-                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, Serdes.StringSerde.class,
-                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, Serdes.StringSerde.class
-        );
-//
-//        var consumer = new KafkaConsumer<>(properties);
-//        consumer.subscribe(Collections.singleton("test-java"));
-//        Flux.fromStream(Stream.generate(() -> consumer.poll(Duration.ofMillis(500))))
-//                .subscribe(System.out::println);
+    final Map<String, Object> properties = Map.of(
+            ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers,
+            ConsumerConfig.GROUP_ID_CONFIG, "test-java-consumer",
+            ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class,
+            ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class
+    );
 
-        StreamsBuilder builder = new StreamsBuilder();
-        final KStream<String, String> stream = builder.stream("test-java",
-                Consumed.with(
-                        Serdes.String(), Serdes.String()
-                )
-        );
+    var consumer = new KafkaConsumer<>(properties);
+    consumer.subscribe(Collections.singleton("test-java"));
+    Flux.fromStream(Stream.generate(() -> consumer.poll(Duration.ofSeconds(3))))
+            .delayElements(Duration.ofSeconds(3))
+            .flatMap(Flux::fromIterable)
+            /*
+            TODO 무엇을 추출할 것인가?
 
-        stream.foreach(((key, value) -> log.info("kafka stream key : {}, value : {}", key, value)));
+            */
+            .subscribe(System.out::println);
 
-        KafkaStreams streams = new KafkaStreams(builder.build(), config);
-        streams.cleanUp();
-        streams.start();
-    }
+  }
 }
